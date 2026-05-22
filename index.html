@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Ganesh Pooja — Personalized Online Puja</title>
+<meta name="description" content="Perform a free, personalized virtual Ganesh pooja with your name and birth star. Beautiful animated 16-step Shodashopachara pooja online.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Hind:wght@300;400;500;600&family=Tiro+Devanagari+Sanskrit:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #110404;
+  --bg2: #1e0808;
+  --bg3: #2a0c0c;
+  --gold: #c8922a;
+  --gold2: #f0c060;
+  --gold3: #ffe08a;
+  --saffron: #e8640a;
+  --saffron2: #ff8c2a;
+  --cream: #fdf0d8;
+  --cream2: #e8d5b0;
+  --red: #8b1a1a;
+  --border: rgba(200,146,42,0.2);
+  --border2: rgba(200,146,42,0.4);
+  --glow: rgba(240,192,96,0.15);
+  --display: 'Rozha One', serif;
+  --body: 'Hind', sans-serif;
+  --sanskrit: 'Tiro Devanagari Sanskrit', serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: var(--body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── PARTICLES ── */
+#petals { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.petal {
+  position: absolute;
+  width: 8px; height: 10px;
+  border-radius: 50% 0 50% 0;
+  opacity: 0;
+  animation: petalFall linear infinite;
+}
+@keyframes petalFall {
+  0%   { transform: translateY(-20px) rotate(0deg) translateX(0); opacity: 0; }
+  10%  { opacity: 0.7; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(105vh) rotate(720deg) translateX(60px); opacity: 0; }
+}
+
+/* ── MANDALA BG ── */
+.mandala-bg {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,146,42,0.04) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+  animation: mandalaPulse 6s ease-in-out infinite;
+}
+.mandala-ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(200,146,42,0.08);
+  animation: mandalaRotate 60s linear infinite;
+}
+.mandala-ring:nth-child(2) { inset: 40px; border-color: rgba(200,146,42,0.06); animation-duration: 80s; animation-direction: reverse; }
+.mandala-ring:nth-child(3) { inset: 80px; border-color: rgba(200,146,42,0.05); animation-duration: 50s; }
+.mandala-ring::before, .mandala-ring::after {
+  content: '';
+  position: absolute; top: 50%; left: 0; right: 0; height: 1px;
+  background: rgba(200,146,42,0.06);
+}
+.mandala-ring::after { transform: rotate(60deg); }
+@keyframes mandalaRotate { to { transform: rotate(360deg); } }
+@keyframes mandalaPulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; position: relative; z-index: 1; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── SCREEN 1: ENTRY ── */
+#screen-entry {
+  align-items: center; justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.entry-inner { max-width: 560px; width: 100%; }
+
+/* GANESH SVG ART */
+.ganesh-art {
+  width: 180px; height: 200px;
+  margin: 0 auto 24px;
+  position: relative;
+  filter: drop-shadow(0 0 30px rgba(200,146,42,0.4));
+  animation: ganeshFloat 4s ease-in-out infinite;
+}
+@keyframes ganeshFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.ganesh-glow {
+  position: absolute; inset: -20px;
+  background: radial-gradient(circle, rgba(240,192,96,0.15), transparent 70%);
+  border-radius: 50%;
+  animation: ganeshGlow 3s ease-in-out infinite;
+}
+@keyframes ganeshGlow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.entry-title {
+  font-family: var(--display);
+  font-size: clamp(28px, 6vw, 46px);
+  color: var(--gold2);
+  line-height: 1.1;
+  margin-bottom: 6px;
+  text-shadow: 0 0 40px rgba(240,192,96,0.4);
+}
+.entry-subtitle {
+  font-family: var(--sanskrit);
+  font-size: 16px;
+  color: var(--saffron2);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+.entry-desc {
+  font-size: 14px;
+  color: var(--cream2);
+  opacity: 0.7;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.form-card {
+  background: linear-gradient(135deg, var(--bg2), var(--bg3));
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-align: left;
+  box-shadow: 0 0 60px rgba(200,146,42,0.08), inset 0 1px 0 rgba(240,192,96,0.1);
+}
+
+.form-group { margin-bottom: 18px; }
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 7px;
+}
+.form-input, .form-select {
+  width: 100%;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--cream);
+  font-family: var(--body);
+  font-size: 15px;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200,146,42,0.15);
+}
+.form-input::placeholder { color: rgba(253,240,216,0.3); }
+.form-select option { background: #1e0808; }
+
+.intention-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.intention-btn {
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--cream2);
+  font-family: var(--body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  display: flex; align-items: center; gap: 7px;
+}
+.intention-btn:hover { border-color: var(--gold); color: var(--gold2); }
+.intention-btn.selected {
+  background: rgba(200,146,42,0.15);
+  border-color: var(--gold);
+  color: var(--gold2);
+}
+.intention-icon { font-size: 16px; }
+
+.begin-btn {
+  width: 100%;
+  margin-top: 22px;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--saffron), var(--gold));
+  border: none;
+  border-radius: 10px;
+  color: #1a0505;
+  font-family: var(--display);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 24px rgba(232,100,10,0.4);
+  letter-spacing: 0.02em;
+}
+.begin-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,100,10,0.5); }
+.begin-btn:active { transform: translateY(0); }
+
+/* ── SCREEN 2: POOJA ── */
+#screen-pooja {
+  padding: 0;
+  flex-direction: column;
+}
+
+.pooja-header {
+  padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: rgba(17,4,4,0.9);
+  backdrop-filter: blur(10px);
+  position: sticky; top: 0; z-index: 10;
+}
+.pooja-header-title {
+  font-family: var(--display);
+  font-size: 15px;
+  color: var(--gold2);
+}
+.progress-wrap { flex: 1; max-width: 200px; margin: 0 16px; }
+.progress-track {
+  height: 3px;
+  background: rgba(200,146,42,0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--saffron), var(--gold2));
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.step-counter {
+  font-size: 12px;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.pooja-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  min-height: 70vh;
+  text-align: center;
+  position: relative;
+}
+
+/* STEP ANIMATION AREA */
+.anim-area {
+  width: 200px; height: 200px;
+  margin: 0 auto 28px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Ganesh idol (base, always present) */
+.idol-base {
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 90px; height: 110px;
+}
+
+/* step-specific offering animations */
+.offering-visual {
+  position: relative; z-index: 2;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.step-emoji {
+  font-size: 56px;
+  animation: offeringBounce 1s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 12px rgba(240,192,96,0.5));
+}
+@keyframes offeringBounce {
+  from { transform: scale(1) translateY(0); }
+  to { transform: scale(1.08) translateY(-6px); }
+}
+
+/* Glow ring */
+.anim-glow {
+  position: absolute; inset: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--glow), transparent 70%);
+  animation: animGlow 2s ease-in-out infinite;
+}
+@keyframes animGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Orbit particles */
+.orbit-ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1px dashed rgba(200,146,42,0.2);
+  animation: orbitSpin 8s linear infinite;
+}
+@keyframes orbitSpin { to { transform: rotate(360deg); } }
+.orbit-dot {
+  position: absolute; top: -4px; left: 50%;
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px var(--gold);
+}
+
+/* Special: Abhishekam milk flow */
+.milk-flow {
+  position: absolute;
+  top: 30px; left: 50%;
+  width: 20px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  border-radius: 10px;
+  transform: translateX(-50%);
+  animation: milkFlow 1.5s ease-in-out infinite;
+}
+@keyframes milkFlow {
+  0% { height: 0; opacity: 1; }
+  60% { height: 80px; opacity: 0.8; }
+  100% { height: 80px; opacity: 0; }
+}
+
+/* Special: Flame */
+.flame-anim {
+  position: relative;
+  display: flex; flex-direction: column;
+  align-items: center;
+}
+.flame-body {
+  width: 20px; height: 44px;
+  background: linear-gradient(to top, #ff4500, #ff9a00, #ffd700, rgba(255,255,255,0.8));
+  border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+  animation: flameDance 1.2s ease-in-out infinite alternate;
+  filter: blur(0.5px);
+}
+.flame-inner-f {
+  position: absolute;
+  bottom: 4px;
+  width: 8px; height: 22px;
+  background: linear-gradient(to top, #fff5d0, #fff);
+  border-radius: 50% 50% 20% 20%;
+  opacity: 0.7;
+  animation: flameDance 0.9s ease-in-out infinite alternate-reverse;
+}
+@keyframes flameDance {
+  from { transform: scaleX(1) rotate(-2deg); }
+  to { transform: scaleX(0.92) rotate(2deg); }
+}
+
+/* Special: Smoke */
+.smoke-wrap {
+  position: relative; width: 60px; height: 120px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.smoke-stick {
+  width: 4px; height: 60px;
+  background: linear-gradient(to top, #8b4513, #d2691e);
+  border-radius: 2px;
+  margin-top: auto;
+}
+.smoke-particle {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(200,200,200,0.4);
+  animation: smokeFly 2s ease-out infinite;
+}
+.smoke-particle:nth-child(2) { animation-delay: 0.4s; }
+.smoke-particle:nth-child(3) { animation-delay: 0.8s; }
+.smoke-particle:nth-child(4) { animation-delay: 1.2s; }
+@keyframes smokeFly {
+  0% { transform: translate(0, 50px) scale(0.5); opacity: 0.6; }
+  100% { transform: translate(var(--dx, 10px), -10px) scale(3); opacity: 0; }
+}
+
+/* Special: Petal shower */
+.petal-shower { position: relative; width: 100%; height: 100%; overflow: hidden; }
+.shower-petal {
+  position: absolute;
+  font-size: 20px;
+  animation: showerFall 1.5s ease-in infinite;
+  top: -20px;
+}
+@keyframes showerFall {
+  0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(180px) rotate(180deg); }
+}
+
+/* Special: Aarti lamp rotate */
+.aarti-lamp {
+  animation: aartiRotate 1s ease-in-out infinite alternate;
+  transform-origin: top center;
+}
+@keyframes aartiRotate {
+  from { transform: rotate(-20deg); }
+  to { transform: rotate(20deg); }
+}
+
+/* Step info */
+.step-number {
+  font-size: 11px; font-weight: 600;
+  color: var(--saffron);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+.step-name {
+  font-family: var(--display);
+  font-size: clamp(22px, 5vw, 34px);
+  color: var(--gold2);
+  margin-bottom: 4px;
+  text-shadow: 0 0 20px rgba(240,192,96,0.3);
+}
+.step-name-en {
+  font-size: 14px;
+  color: var(--cream2);
+  opacity: 0.6;
+  margin-bottom: 16px;
+}
+.step-mantra {
+  font-family: var(--sanskrit);
+  font-size: 15px;
+  color: var(--saffron2);
+  font-style: italic;
+  margin-bottom: 8px;
+  line-height: 1.6;
+  max-width: 460px;
+}
+.step-meaning {
+  font-size: 13px;
+  color: var(--cream2);
+  opacity: 0.6;
+  max-width: 400px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.offer-btn {
+  padding: 14px 40px;
+  background: linear-gradient(135deg, var(--saffron), var(--gold));
+  border: none;
+  border-radius: 50px;
+  color: #1a0505;
+  font-family: var(--display);
+  font-size: 17px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(232,100,10,0.35);
+  letter-spacing: 0.02em;
+}
+.offer-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,100,10,0.5); }
+
+/* ── SCREEN 3: AARTI ── */
+#screen-aarti {
+  align-items: center; justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  background: radial-gradient(ellipse at center, rgba(200,146,42,0.12) 0%, transparent 70%);
+}
+
+.aarti-title {
+  font-family: var(--display);
+  font-size: clamp(28px, 6vw, 48px);
+  color: var(--gold2);
+  margin-bottom: 6px;
+  text-shadow: 0 0 40px rgba(240,192,96,0.5);
+}
+.aarti-subtitle {
+  font-family: var(--sanskrit);
+  font-size: 18px;
+  color: var(--saffron2);
+  font-style: italic;
+  margin-bottom: 40px;
+}
+
+.aarti-scene {
+  position: relative;
+  width: 280px; height: 280px;
+  margin: 0 auto 40px;
+}
+.aarti-glow-bg {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240,192,96,0.25), transparent 70%);
+  animation: aartiGlow 1.5s ease-in-out infinite;
+}
+@keyframes aartiGlow {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+.aarti-ganesh-wrap {
+  position: absolute; inset: 30px;
+  display: flex; align-items: center; justify-content: center;
+}
+.aarti-lamp-wrap {
+  position: absolute;
+  bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  animation: aartiSwing 1s ease-in-out infinite alternate;
+  transform-origin: 50% -20px;
+}
+@keyframes aartiSwing {
+  from { transform: translateX(-50%) rotate(-25deg); }
+  to { transform: translateX(-50%) rotate(25deg); }
+}
+.aarti-orbits {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1px dashed rgba(200,146,42,0.15);
+  animation: mandalaRotate 4s linear infinite;
+}
+.orbit-petal { position: absolute; font-size: 14px; }
+
+.aarti-lines {
+  max-width: 400px; margin: 0 auto 32px;
+}
+.aarti-line {
+  font-family: var(--sanskrit);
+  font-size: 16px;
+  color: var(--cream2);
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: aartiLineFadeIn 0.6s ease both;
+  line-height: 1.7;
+}
+@keyframes aartiLineFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.aarti-btn {
+  padding: 14px 40px;
+  background: linear-gradient(135deg, var(--gold), var(--saffron));
+  border: none; border-radius: 50px;
+  color: #1a0505;
+  font-family: var(--display);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 24px rgba(200,146,42,0.4);
+}
+.aarti-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,146,42,0.5); }
+
+/* ── SCREEN 4: BLESSING ── */
+#screen-blessing {
+  align-items: center; justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.blessing-inner { max-width: 560px; width: 100%; }
+
+.blessing-burst {
+  width: 160px; height: 160px;
+  margin: 0 auto 28px;
+  position: relative;
+}
+.burst-ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  animation: burstRing 3s ease-in-out infinite;
+}
+.burst-ring:nth-child(2) { inset: 15px; border-color: var(--saffron); animation-delay: 0.5s; animation-direction: reverse; }
+.burst-ring:nth-child(3) { inset: 30px; border-color: var(--gold2); animation-delay: 1s; }
+@keyframes burstRing {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+.burst-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 56px; animation: ganeshFloat 3s ease-in-out infinite; }
+
+.blessing-title {
+  font-family: var(--display);
+  font-size: clamp(24px, 5vw, 38px);
+  color: var(--gold2);
+  margin-bottom: 6px;
+  text-shadow: 0 0 30px rgba(240,192,96,0.4);
+}
+.blessing-name {
+  font-family: var(--display);
+  font-size: clamp(18px, 4vw, 26px);
+  color: var(--saffron2);
+  margin-bottom: 24px;
+}
+
+.blessing-card {
+  background: linear-gradient(135deg, var(--bg2), var(--bg3));
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 28px 24px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.blessing-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+}
+.blessing-text {
+  font-family: var(--sanskrit);
+  font-size: 16px;
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+.blessing-meaning {
+  font-size: 14px;
+  color: var(--cream2);
+  opacity: 0.7;
+  line-height: 1.6;
+}
+
+.nakshatra-card {
+  background: rgba(200,146,42,0.06);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex; gap: 16px; align-items: center;
+  text-align: left;
+}
+.nakshatra-icon { font-size: 32px; }
+.nakshatra-info {}
+.nakshatra-label { font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+.nakshatra-value { font-family: var(--display); font-size: 16px; color: var(--cream); }
+.nakshatra-desc { font-size: 12px; color: var(--cream2); opacity: 0.6; margin-top: 2px; }
+
+.blessing-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.action-btn {
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-family: var(--body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 7px;
+  border: 1px solid transparent;
+}
+.action-btn-primary {
+  background: linear-gradient(135deg, var(--saffron), var(--gold));
+  color: #1a0505;
+}
+.action-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,100,10,0.4); }
+.action-btn-secondary {
+  background: transparent;
+  border-color: var(--border2);
+  color: var(--gold2);
+}
+.action-btn-secondary:hover { border-color: var(--gold); background: var(--glow); }
+
+/* ── GANESH SVG ── */
+.ganesh-svg { width: 100%; height: 100%; }
+
+/* ── TRANSITION ── */
+.screen-fade { animation: fadeIn 0.5s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── GOLDEN DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 16px 0;
+  color: rgba(200,146,42,0.3);
+}
+.divider-line { flex: 1; height: 1px; background: rgba(200,146,42,0.2); }
+.divider-sym { font-size: 14px; color: var(--gold); opacity: 0.5; }
+
+/* ── TOOLTIP ── */
+.toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--gold2);
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 13px;
+  z-index: 999;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 480px) {
+  .intention-grid { grid-template-columns: 1fr; }
+  .blessing-actions { flex-direction: column; }
+  .action-btn { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<div id="petals"></div>
+<div class="mandala-bg">
+  <div class="mandala-ring"><div class="orbit-dot"></div></div>
+  <div class="mandala-ring"></div>
+  <div class="mandala-ring"></div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SCREEN 1: ENTRY FORM                   -->
+<!-- ══════════════════════════════════════ -->
+<div id="screen-entry" class="screen active screen-fade">
+  <div class="entry-inner">
+
+    <div class="ganesh-art">
+      <div class="ganesh-glow"></div>
+      <svg class="ganesh-svg" viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Lotus seat -->
+        <ellipse cx="90" cy="188" rx="60" ry="12" fill="rgba(200,146,42,0.2)" stroke="#c8922a" stroke-width="1"/>
+        <ellipse cx="90" cy="184" rx="45" ry="8" fill="rgba(200,146,42,0.15)" stroke="#c8922a" stroke-width="0.8"/>
+        <!-- Body -->
+        <ellipse cx="90" cy="148" rx="48" ry="44" fill="#8b1a1a" stroke="#c8922a" stroke-width="1.5"/>
+        <!-- Belly -->
+        <ellipse cx="90" cy="160" rx="28" ry="22" fill="rgba(200,146,42,0.1)" stroke="rgba(200,146,42,0.3)" stroke-width="1"/>
+        <!-- Arms -->
+        <path d="M44 130 Q20 120 22 100 Q24 85 38 90" stroke="#c8922a" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <path d="M136 130 Q158 118 158 98 Q158 82 144 88" stroke="#c8922a" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <path d="M50 138 Q28 155 30 170 Q32 180 44 176" stroke="#8b1a1a" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <path d="M130 138 Q152 155 150 170 Q148 180 136 176" stroke="#8b1a1a" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <!-- Offerings in hands -->
+        <circle cx="22" cy="96" r="8" fill="#d4a017" stroke="#f0c060" stroke-width="1"/>
+        <text x="18" y="100" font-size="8" fill="#1a0505">🪷</text>
+        <circle cx="156" cy="94" r="8" fill="#c8922a" stroke="#f0c060" stroke-width="1"/>
+        <!-- Neck -->
+        <rect x="76" y="108" width="28" height="18" rx="4" fill="#7a1515"/>
+        <!-- Head (elephant, big) -->
+        <ellipse cx="90" cy="88" rx="46" ry="44" fill="#8b1a1a" stroke="#c8922a" stroke-width="1.5"/>
+        <!-- Ears -->
+        <ellipse cx="46" cy="82" rx="22" ry="30" fill="#7a1515" stroke="#c8922a" stroke-width="1.2"/>
+        <ellipse cx="46" cy="82" rx="14" ry="22" fill="rgba(200,146,42,0.15)"/>
+        <ellipse cx="134" cy="82" rx="22" ry="30" fill="#7a1515" stroke="#c8922a" stroke-width="1.2"/>
+        <ellipse cx="134" cy="82" rx="14" ry="22" fill="rgba(200,146,42,0.15)"/>
+        <!-- Eyes -->
+        <ellipse cx="74" cy="76" rx="10" ry="11" fill="#f0e8d0" stroke="#c8922a" stroke-width="1"/>
+        <ellipse cx="106" cy="76" rx="10" ry="11" fill="#f0e8d0" stroke="#c8922a" stroke-width="1"/>
+        <ellipse cx="75" cy="77" rx="6" ry="7" fill="#2a0a0a"/>
+        <ellipse cx="107" cy="77" rx="6" ry="7" fill="#2a0a0a"/>
+        <circle cx="77" cy="75" r="2" fill="#fff" opacity="0.8"/>
+        <circle cx="109" cy="75" r="2" fill="#fff" opacity="0.8"/>
+        <!-- Bindi -->
+        <circle cx="90" cy="64" r="5" fill="#ff4500"/>
+        <circle cx="90" cy="64" r="2" fill="#ffd700"/>
+        <!-- Trunk (curling right = auspicious) -->
+        <path d="M90 96 Q82 106 76 118 Q72 130 80 136 Q90 140 96 132" stroke="#7a1515" stroke-width="14" stroke-linecap="round" fill="none"/>
+        <path d="M90 96 Q82 106 76 118 Q72 130 80 136 Q90 140 96 132" stroke="#8b1a1a" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <!-- Tusk -->
+        <path d="M70 96 Q58 110 56 122 Q55 130 62 128" stroke="#f5e6c8" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <!-- Crown / Mukut -->
+        <path d="M52 60 L58 30 L70 46 L90 20 L110 46 L122 30 L128 60 Z" fill="#c8922a" stroke="#f0c060" stroke-width="1.5"/>
+        <path d="M62 56 L66 36 L75 48 L90 28 L105 48 L114 36 L118 56 Z" fill="#d4a017"/>
+        <!-- Crown jewels -->
+        <circle cx="90" cy="32" r="5" fill="#ff4500" stroke="#ffd700" stroke-width="1"/>
+        <circle cx="74" cy="42" r="3" fill="#00a86b" stroke="#ffd700" stroke-width="0.8"/>
+        <circle cx="106" cy="42" r="3" fill="#00a86b" stroke="#ffd700" stroke-width="0.8"/>
+        <!-- Tilak on forehead -->
+        <path d="M82 66 Q90 60 98 66" stroke="#ff6600" stroke-width="2" fill="none"/>
+        <!-- Gold chain / necklace -->
+        <path d="M62 112 Q90 118 118 112" stroke="#f0c060" stroke-width="2" stroke-dasharray="3 2" fill="none"/>
+      </svg>
+    </div>
+
+    <h1 class="entry-title">Virtual Ganesh Pooja</h1>
+    <p class="entry-subtitle">ॐ गं गणपतये नमः</p>
+    <p class="entry-desc">Perform a personalized, step-by-step Ganesh Shodashopachara Pooja from anywhere. Enter your name and birth star to begin.</p>
+
+    <div class="form-card">
+      <div class="form-group">
+        <label class="form-label">Your Name (as in mantra)</label>
+        <input class="form-input" id="inp-name" type="text" placeholder="Enter your full name" maxlength="40">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Birth Star (Nakshatra)</label>
+        <select class="form-select" id="inp-nakshatra">
+          <option value="">— Select your Nakshatra —</option>
+          <option value="Ashwini">Ashwini (அஸ்வினி)</option>
+          <option value="Bharani">Bharani (பரணி)</option>
+          <option value="Krittika">Krittika (கார்த்திகை)</option>
+          <option value="Rohini">Rohini (ரோகிணி)</option>
+          <option value="Mrigashira">Mrigashira (மிருகசீரிஷம்)</option>
+          <option value="Ardra">Ardra (திருவாதிரை)</option>
+          <option value="Punarvasu">Punarvasu (புனர்பூசம்)</option>
+          <option value="Pushya">Pushya (பூசம்)</option>
+          <option value="Ashlesha">Ashlesha (ஆயில்யம்)</option>
+          <option value="Magha">Magha (மகம்)</option>
+          <option value="Purva Phalguni">Purva Phalguni (பூரம்)</option>
+          <option value="Uttara Phalguni">Uttara Phalguni (உத்திரம்)</option>
+          <option value="Hasta">Hasta (அஸ்தம்)</option>
+          <option value="Chitra">Chitra (சித்திரை)</option>
+          <option value="Swati">Swati (சுவாதி)</option>
+          <option value="Vishakha">Vishakha (விசாகம்)</option>
+          <option value="Anuradha">Anuradha (அனுஷம்)</option>
+          <option value="Jyeshtha">Jyeshtha (கேட்டை)</option>
+          <option value="Mula">Mula (மூலம்)</option>
+          <option value="Purva Ashadha">Purva Ashadha (பூராடம்)</option>
+          <option value="Uttara Ashadha">Uttara Ashadha (உத்திராடம்)</option>
+          <option value="Shravana">Shravana (திருவோணம்)</option>
+          <option value="Dhanishtha">Dhanishtha (அவிட்டம்)</option>
+          <option value="Shatabhisha">Shatabhisha (சதயம்)</option>
+          <option value="Purva Bhadrapada">Purva Bhadrapada (பூரட்டாதி)</option>
+          <option value="Uttara Bhadrapada">Uttara Bhadrapada (உத்திரட்டாதி)</option>
+          <option value="Revati">Revati (ரேவதி)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Prayer Intention</label>
+        <div class="intention-grid" id="intention-grid">
+          <button class="intention-btn" data-val="new ventures & success"><span class="intention-icon">🚀</span> New Ventures & Success</button>
+          <button class="intention-btn" data-val="remove obstacles"><span class="intention-icon">🙏</span> Remove Obstacles</button>
+          <button class="intention-btn" data-val="education & wisdom"><span class="intention-icon">📚</span> Education & Wisdom</button>
+          <button class="intention-btn" data-val="health & healing"><span class="intention-icon">💚</span> Health & Healing</button>
+          <button class="intention-btn" data-val="wealth & prosperity"><span class="intention-icon">💰</span> Wealth & Prosperity</button>
+          <button class="intention-btn" data-val="love & relationships"><span class="intention-icon">❤️</span> Love & Relationships</button>
+        </div>
+      </div>
+
+      <button class="begin-btn" id="begin-btn" onclick="beginPooja()">
+        🪔 Begin Pooja
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SCREEN 2: POOJA STEPS                  -->
+<!-- ══════════════════════════════════════ -->
+<div id="screen-pooja" class="screen">
+  <div class="pooja-header">
+    <div class="pooja-header-title">🪔 Ganesh Pooja</div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="step-counter" id="step-counter">Step 1 of 16</div>
+  </div>
+  <div class="pooja-stage screen-fade" id="pooja-stage">
+    <!-- Dynamically rendered -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SCREEN 3: AARTI                        -->
+<!-- ══════════════════════════════════════ -->
+<div id="screen-aarti" class="screen">
+  <h2 class="aarti-title">🔔 Aarti Time!</h2>
+  <p class="aarti-subtitle">जय गणेश, जय गणेश, जय गणेश देवा</p>
+
+  <div class="aarti-scene">
+    <div class="aarti-glow-bg"></div>
+    <div class="aarti-ganesh-wrap">
+      <div style="font-size:80px; animation: ganeshFloat 3s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(240,192,96,0.4));">🐘</div>
+    </div>
+    <div class="aarti-orbits">
+      <span class="orbit-petal" style="top:-10px;left:50%">🌸</span>
+      <span class="orbit-petal" style="top:50%;right:-10px">✨</span>
+      <span class="orbit-petal" style="bottom:-10px;left:50%">🌺</span>
+      <span class="orbit-petal" style="top:50%;left:-10px">✨</span>
+    </div>
+    <div class="aarti-lamp-wrap">
+      <div style="font-size:36px;">🪔</div>
+    </div>
+  </div>
+
+  <div class="aarti-lines">
+    <p class="aarti-line" style="animation-delay:0.2s">जय गणेश, जय गणेश, जय गणेश देवा</p>
+    <p class="aarti-line" style="animation-delay:0.6s">माता जाकी पार्वती, पिता महादेवा</p>
+    <p class="aarti-line" style="animation-delay:1.0s">एकदंत दयावंत, चार भुजाधारी</p>
+    <p class="aarti-line" style="animation-delay:1.4s">माथे पे सिंदूर सोहे, मूसे की सवारी</p>
+    <p class="aarti-line" style="animation-delay:1.8s; color: var(--gold2); font-size:18px;">ॐ गं गणपतये नमः 🙏</p>
+  </div>
+
+  <button class="aarti-btn" onclick="showBlessing()">Receive Blessings ✨</button>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SCREEN 4: BLESSING                     -->
+<!-- ══════════════════════════════════════ -->
+<div id="screen-blessing" class="screen">
+  <div class="blessing-inner screen-fade">
+
+    <div class="blessing-burst">
+      <div class="burst-ring"></div>
+      <div class="burst-ring"></div>
+      <div class="burst-ring"></div>
+      <div class="burst-emoji">🐘</div>
+    </div>
+
+    <h2 class="blessing-title">Pooja Complete!</h2>
+    <p class="blessing-name" id="blessing-name-display"></p>
+
+    <div class="blessing-card">
+      <p class="blessing-text" id="blessing-text"></p>
+      <div class="divider"><div class="divider-line"></div><div class="divider-sym">॥</div><div class="divider-line"></div></div>
+      <p class="blessing-meaning" id="blessing-meaning"></p>
+    </div>
+
+    <div class="nakshatra-card" id="nakshatra-card">
+      <div class="nakshatra-icon" id="nak-icon"></div>
+      <div class="nakshatra-info">
+        <div class="nakshatra-label">Your Nakshatra</div>
+        <div class="nakshatra-value" id="nak-name"></div>
+        <div class="nakshatra-desc" id="nak-desc"></div>
+      </div>
+    </div>
+
+    <div class="blessing-actions">
+      <button class="action-btn action-btn-primary" onclick="shareWhatsApp()">
+        💬 Share on WhatsApp
+      </button>
+      <button class="action-btn action-btn-secondary" onclick="downloadCertificate()">
+        📜 Download Certificate
+      </button>
+      <button class="action-btn action-btn-secondary" onclick="doAgain()">
+        🔄 Do Pooja Again
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────
+const nakshatraData = {
+  "Ashwini":           { icon:"🐴", lord:"Ketu",    color:"#ff6b6b", desc:"Star of Transport & Healing. Lord Ganesh as Bala Ganapati blesses you." },
+  "Bharani":           { icon:"🌊", lord:"Venus",   color:"#ff8fab", desc:"Star of Restraint. Taruna Ganapati removes all obstacles in your path." },
+  "Krittika":          { icon:"🔥", lord:"Sun",     color:"#ff7722", desc:"Star of Fire & Courage. Bhakti Ganapati bestows divine grace." },
+  "Rohini":            { icon:"🌹", lord:"Moon",    color:"#ffd1dc", desc:"Star of Growth. Veera Ganapati brings victory and abundance." },
+  "Mrigashira":        { icon:"🦌", lord:"Mars",    color:"#90ee90", desc:"Star of Searching. Shakti Ganapati guides you to your purpose." },
+  "Ardra":             { icon:"💧", lord:"Rahu",    color:"#87ceeb", desc:"Star of Effort. Dvija Ganapati blesses with knowledge and clarity." },
+  "Punarvasu":         { icon:"⭐", lord:"Jupiter", color:"#ffd700", desc:"Star of Return. Siddhi Ganapati fulfills all your wishes." },
+  "Pushya":            { icon:"🪷", lord:"Saturn",  color:"#dda0dd", desc:"Star of Nourishment. Ucchishta Ganapati bestows spiritual wealth." },
+  "Ashlesha":          { icon:"🐍", lord:"Mercury", color:"#98fb98", desc:"Star of Clinging. Vigna Ganapati protects from all adversities." },
+  "Magha":             { icon:"👑", lord:"Ketu",    color:"#ffd700", desc:"Star of Authority. Kshipra Ganapati grants quick fulfillment of desires." },
+  "Purva Phalguni":    { icon:"🌺", lord:"Venus",   color:"#ffb6c1", desc:"Star of Pleasure. Heramba Ganapati bestows protection and blessings." },
+  "Uttara Phalguni":   { icon:"✨", lord:"Sun",     color:"#fff0a0", desc:"Star of Patronage. Lakshmi Ganapati brings wealth and prosperity." },
+  "Hasta":             { icon:"✋", lord:"Moon",    color:"#f0e68c", desc:"Star of the Hand. Maha Ganapati bestows great power and success." },
+  "Chitra":            { icon:"🌟", lord:"Mars",    color:"#dda0dd", desc:"Star of Bright Jewel. Vijaya Ganapati grants victory in all endeavors." },
+  "Swati":             { icon:"🍃", lord:"Rahu",    color:"#90ee90", desc:"Star of Independence. Nritya Ganapati blesses with joy and creativity." },
+  "Vishakha":          { icon:"⚡", lord:"Jupiter", color:"#ffd700", desc:"Star of Purpose. Urdhva Ganapati elevates your spiritual consciousness." },
+  "Anuradha":          { icon:"🌙", lord:"Saturn",  color:"#b0c4de", desc:"Star of Success. Ekakshara Ganapati removes all karmic obstacles." },
+  "Jyeshtha":          { icon:"🌩️", lord:"Mercury", color:"#c0c0c0", desc:"Star of the Elder. Tryakshara Ganapati bestows wisdom and longevity." },
+  "Mula":              { icon:"🌿", lord:"Ketu",    color:"#228b22", desc:"Star of the Root. Kshipra Ganapati removes deep-rooted obstacles." },
+  "Purva Ashadha":     { icon:"🌊", lord:"Venus",   color:"#4682b4", desc:"Star of Victory. Haridra Ganapati bestows auspiciousness and fortune." },
+  "Uttara Ashadha":    { icon:"🏆", lord:"Sun",     color:"#daa520", desc:"Star of Universal Victory. Ekaadanta Ganapati fulfills all righteous desires." },
+  "Shravana":          { icon:"👂", lord:"Moon",    color:"#add8e6", desc:"Star of Learning. Srishti Ganapati blesses with divine knowledge." },
+  "Dhanishtha":        { icon:"🎵", lord:"Mars",    color:"#cd853f", desc:"Star of Wealth. Uddanda Ganapati removes afflictions and grants prosperity." },
+  "Shatabhisha":       { icon:"💊", lord:"Rahu",    color:"#708090", desc:"Star of Healing. Nritya Ganapati bestows healing and divine joy." },
+  "Purva Bhadrapada":  { icon:"🔱", lord:"Jupiter", color:"#9370db", desc:"Star of Auspiciousness. Dvimukha Ganapati grants dual protection." },
+  "Uttara Bhadrapada": { icon:"🐟", lord:"Saturn",  color:"#6495ed", desc:"Star of the Blessed Feet. Trimukha Ganapati grants complete liberation." },
+  "Revati":            { icon:"🐠", lord:"Mercury", color:"#20b2aa", desc:"Star of the Wealthy. Siddhi Ganapati fulfills all your heart's desires." }
+};
+
+const intentionBlessings = {
+  "new ventures & success": {
+    text: "ॐ वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ। निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा॥",
+    meaning: "O Lord Ganesha of the curved trunk, great form, and the splendour of a million suns — make all my works free of obstacles, always."
+  },
+  "remove obstacles": {
+    text: "ॐ गं गणपतये नमः। विघ्नेश्वराय नमः। सर्व विघ्न नाशाय नमः॥",
+    meaning: "Om, salutations to Ganapati. Salutations to the Lord of Obstacles. May all obstacles be destroyed completely."
+  },
+  "education & wisdom": {
+    text: "ॐ गणेशाय विद्यादायिने नमः। बुद्धिप्रिय सुमुखाय नमः॥",
+    meaning: "Salutations to Ganesha, the bestower of knowledge. O beloved of wisdom, bless this devotee with clarity and intelligence."
+  },
+  "health & healing": {
+    text: "ॐ आरोग्यं धेहि मे देव सर्वरोगान् विनाशय। गजानन महाकाय सर्व भय निवारय॥",
+    meaning: "O elephant-faced God, grant me health and destroy all illness. Great Lord, remove all fear and bring healing grace."
+  },
+  "wealth & prosperity": {
+    text: "ॐ ऋद्धि सिद्धि गणेशाय नमः। श्री गणेशाय धन दायिने नमः॥",
+    meaning: "Salutations to Ganesha, giver of Riddhi (wealth) and Siddhi (spiritual power). May abundance flow into this devotee's life."
+  },
+  "love & relationships": {
+    text: "ॐ गणपतये विवाह सिद्धिं देहि। प्रेम कलह नाशाय नमः गणेशाय॥",
+    meaning: "O Ganapati, bestow success in love and relationships. Destroy conflicts and fill this devotee's heart with love and harmony."
+  }
+};
+
+const poojaSteps = [
+  { id:1, name:"आवाहनम्", nameEn:"Avahana — Invocation", emoji:"✨", anim:"sparkle",
+    mantra:"ॐ {NAME}ः {NAKSHATRA} नक्षत्रे जातः। श्री गणेशं सादरं आवाहयामि॥",
+    meaning:"I, {NAME}, born under {NAKSHATRA} star, invite Lord Ganesha with reverence to be present in this pooja." },
+  { id:2, name:"आसनम्", nameEn:"Aasana — Offering a Seat", emoji:"🪷", anim:"lotus",
+    mantra:"ॐ गणेशाय नमः। स्वर्ण सिंहासनं समर्पयामि॥",
+    meaning:"O Lord Ganesha, I offer you a golden throne. Please be seated and accept this humble service." },
+  { id:3, name:"पाद्यम्", nameEn:"Paadya — Water for Feet", emoji:"💧", anim:"water",
+    mantra:"ॐ गजाननाय नमः। पाद्यं समर्पयामि॥",
+    meaning:"O elephant-faced Lord, I offer sacred water to wash your lotus feet with devotion." },
+  { id:4, name:"अर्घ्यम्", nameEn:"Arghya — Water Offering", emoji:"🫙", anim:"water",
+    mantra:"ॐ विघ्नेश्वराय नमः। अर्घ्यं समर्पयामि॥",
+    meaning:"O Lord of Obstacles, I offer this water to your divine hands as a mark of my reverence." },
+  { id:5, name:"आचमनीयम्", nameEn:"Aachamana — Purification", emoji:"🌊", anim:"sparkle",
+    mantra:"ॐ एकदन्ताय नमः। आचमनीयं समर्पयामि॥",
+    meaning:"O single-tusked Lord, I offer this water for purification. May my mind and heart be cleansed." },
+  { id:6, name:"स्नानम्", nameEn:"Abhishekam — Sacred Bath", emoji:"🥛", anim:"milk",
+    mantra:"ॐ गणाधिपाय नमः। पञ्चामृत स्नानं समर्पयामि॥",
+    meaning:"O Lord of the Ganas, I perform Panchamrita Abhishekam — bathing you in milk, honey, curd, ghee, and sugar." },
+  { id:7, name:"वस्त्रम्", nameEn:"Vastra — Sacred Cloth", emoji:"🧡", anim:"sparkle",
+    mantra:"ॐ हेरम्बाय नमः। वस्त्रं समर्पयामि॥",
+    meaning:"O protector Heramba, I offer you this sacred garment. May you adorn yourself in this devotion." },
+  { id:8, name:"यज्ञोपवीतम्", nameEn:"Yagnopaveeta — Sacred Thread", emoji:"🔱", anim:"sparkle",
+    mantra:"ॐ शूर्पकर्णाय नमः। यज्ञोपवीतं समर्पयामि॥",
+    meaning:"O large-eared Lord, I offer the sacred thread — may it connect your divine energy to this devotee." },
+  { id:9, name:"गन्धम्", nameEn:"Gandha — Sandalwood Paste", emoji:"🌿", anim:"gandha",
+    mantra:"ॐ गणेशाय नमः। चन्दन गन्धं समर्पयामि॥",
+    meaning:"O Ganesha, I offer this fragrant sandalwood paste to your lotus feet and divine form with love." },
+  { id:10, name:"पुष्पम्", nameEn:"Pushpa — Flower Offering", emoji:"🌸", anim:"petals",
+    mantra:"ॐ {NAME}ः। श्री गणेशाय पुष्पाञ्जलिं समर्पयामि॥",
+    meaning:"{NAME} offers these sacred flowers — jasmine, hibiscus, and lotus — at the lotus feet of Lord Ganesha." },
+  { id:11, name:"धूपम्", nameEn:"Dhupa — Incense", emoji:"🪔", anim:"smoke",
+    mantra:"ॐ लम्बोदराय नमः। दिव्य धूपं समर्पयामि॥",
+    meaning:"O potbellied Lord Lambodara, I offer this fragrant incense. May it carry my prayers to the divine." },
+  { id:12, name:"दीपम्", nameEn:"Deepa — Lamp of Knowledge", emoji:"🕯️", anim:"flame",
+    mantra:"ॐ विनायकाय नमः। ज्ञान दीपं समर्पयामि॥",
+    meaning:"O Vinayaka, I light this lamp to dispel the darkness of ignorance. May your wisdom illuminate my path." },
+  { id:13, name:"नैवेद्यम्", nameEn:"Naivedya — Food Offering", emoji:"🍮", anim:"modak",
+    mantra:"ॐ गणपतये नमः। मोदक नैवेद्यं समर्पयामि॥",
+    meaning:"O Ganapati, lover of modaks, I offer you your favourite sweet. Accept this loving offering, dear Lord." },
+  { id:14, name:"ताम्बूलम्", nameEn:"Tambula — Betel Leaves", emoji:"🌿", anim:"sparkle",
+    mantra:"ॐ गणराजाय नमः। ताम्बूलं समर्पयामि॥",
+    meaning:"O King of Ganas, I offer betel leaves and areca nut. May you be pleased with this sacred offering." },
+  { id:15, name:"आरती", nameEn:"Aarti — Waving of Light", emoji:"🪔", anim:"aarti",
+    mantra:"ॐ कार्तिकेय सहोदराय। मङ्गल आरती समर्पयामि॥",
+    meaning:"O brother of Kartikeya, I wave this lamp in an auspicious aarti. Receive this light and grant your blessings." },
+  { id:16, name:"पुष्पाञ्जलि", nameEn:"Pushpanjali — Final Flower Shower", emoji:"🌺", anim:"shower",
+    mantra:"ॐ {NAME}ः {NAKSHATRA} नक्षत्रे जातः। पुष्पाञ्जलिं समर्पयामि। नमस्ते॥",
+    meaning:"{NAME}, born under {NAKSHATRA}, offers this final shower of flowers at your lotus feet. Thank you, dear Ganesha." }
+];
+
+// ── STATE ──
+let userName = '', userNakshatra = '', userIntention = '', currentStep = 0;
+
+// ── PETALS ──
+(function spawnPetals() {
+  const container = document.getElementById('petals');
+  const colors = ['#ff9f43','#ff6b6b','#ffd700','#ffb347','#ff8c94','#ffcc80'];
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.cssText = `
+      left: ${Math.random()*100}%;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration: ${8 + Math.random()*12}s;
+      animation-delay: ${Math.random()*10}s;
+      width: ${6 + Math.random()*8}px;
+      height: ${8 + Math.random()*10}px;
+      opacity: 0;
+    `;
+    container.appendChild(p);
+  }
+})();
+
+// ── INTENTIONS ──
+document.querySelectorAll('.intention-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.intention-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    userIntention = btn.dataset.val;
+  });
+});
+
+// ── BEGIN ──
+function beginPooja() {
+  userName = document.getElementById('inp-name').value.trim();
+  userNakshatra = document.getElementById('inp-nakshatra').value;
+  if (!userName) { return toast('Please enter your name 🙏'); }
+  if (!userNakshatra) { return toast('Please select your birth star 🌟'); }
+  if (!userIntention) { return toast('Please choose your prayer intention ✨'); }
+  currentStep = 0;
+  showScreen('screen-pooja');
+  renderStep();
+}
+
+// ── RENDER STEP ──
+function renderStep() {
+  const step = poojaSteps[currentStep];
+  const total = poojaSteps.length;
+  const pct = ((currentStep) / total) * 100;
+
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('step-counter').textContent = `Step ${currentStep+1} of ${total}`;
+
+  const mantraText = step.mantra
+    .replace(/{NAME}/g, userName)
+    .replace(/{NAKSHATRA}/g, userNakshatra);
+  const meaningText = step.meaning
+    .replace(/{NAME}/g, userName)
+    .replace(/{NAKSHATRA}/g, userNakshatra);
+
+  const isLast = currentStep === total - 1;
+
+  document.getElementById('pooja-stage').innerHTML = `
+    <div class="step-number">Step ${currentStep+1} of ${total}</div>
+
+    <div class="anim-area">
+      <div class="anim-glow"></div>
+      <div class="orbit-ring"><div class="orbit-dot"></div></div>
+      ${buildAnimation(step)}
+    </div>
+
+    <div class="step-name">${step.name}</div>
+    <div class="step-name-en">${step.nameEn}</div>
+
+    <div class="divider"><div class="divider-line"></div><div class="divider-sym">॥</div><div class="divider-line"></div></div>
+
+    <p class="step-mantra">${mantraText}</p>
+    <p class="step-meaning">${meaningText}</p>
+
+    <button class="offer-btn" onclick="nextStep()">
+      ${isLast ? '🌺 Complete Pooja' : '🙏 Offer & Continue'}
+    </button>
+  `;
+
+  document.getElementById('pooja-stage').classList.remove('screen-fade');
+  void document.getElementById('pooja-stage').offsetWidth;
+  document.getElementById('pooja-stage').classList.add('screen-fade');
+}
+
+function buildAnimation(step) {
+  switch(step.anim) {
+    case 'milk':
+      return `<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+        <div class="step-emoji">🥛</div>
+        <div class="milk-flow"></div>
+      </div>`;
+    case 'flame':
+      return `<div class="flame-anim" style="margin-top:40px;">
+        <div class="flame-body"></div>
+        <div class="flame-inner-f"></div>
+        <div style="width:12px;height:40px;background:linear-gradient(to right,#c8922a,#f0c060,#c8922a);border-radius:2px;margin-top:2px;"></div>
+        <div style="width:20px;height:5px;background:#c8922a;border-radius:2px;"></div>
+      </div>`;
+    case 'smoke':
+      return `<div class="smoke-wrap">
+        <div class="smoke-particle" style="left:28px;--dx:-15px;"></div>
+        <div class="smoke-particle" style="left:32px;--dx:12px;"></div>
+        <div class="smoke-particle" style="left:26px;--dx:-8px;"></div>
+        <div class="smoke-particle" style="left:34px;--dx:18px;"></div>
+        <div class="smoke-stick"></div>
+        <div style="width:30px;height:6px;background:#8b4513;border-radius:3px;"></div>
+      </div>`;
+    case 'petals':
+    case 'shower':
+      const petals = ['🌸','🌺','🌼','🌹','🏵️'];
+      let pHtml = '<div class="petal-shower">';
+      for(let i=0;i<8;i++) {
+        pHtml += `<div class="shower-petal" style="left:${10+i*11}%;animation-delay:${i*0.2}s;animation-duration:${1.2+Math.random()*0.8}s;">${petals[i%petals.length]}</div>`;
+      }
+      pHtml += '</div>';
+      return pHtml;
+    case 'aarti':
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div class="aarti-lamp" style="font-size:60px;display:block;">🪔</div>
+        <div style="font-size:24px;animation:ganeshFloat 2s ease-in-out infinite;">✨</div>
+      </div>`;
+    case 'modak':
+      return `<div style="position:relative;">
+        <div class="step-emoji" style="font-size:70px;">🍮</div>
+        <div style="position:absolute;top:-10px;right:-5px;font-size:24px;animation:offeringBounce 0.8s ease-in-out infinite alternate;animation-delay:0.3s;">✨</div>
+      </div>`;
+    default:
+      return `<div class="offering-visual"><div class="step-emoji">${step.emoji}</div></div>`;
+  }
+}
+
+// ── NEXT STEP ──
+function nextStep() {
+  currentStep++;
+  if (currentStep >= poojaSteps.length) {
+    showScreen('screen-aarti');
+  } else {
+    renderStep();
+  }
+}
+
+// ── SHOW BLESSING ──
+function showBlessing() {
+  const blessingData = intentionBlessings[userIntention] || intentionBlessings["remove obstacles"];
+  const nakData = nakshatraData[userNakshatra] || { icon:'🌟', desc:'Lord Ganesha blesses you abundantly.' };
+
+  document.getElementById('blessing-name-display').textContent =
+    `Lord Ganesha blesses ${userName}`;
+  document.getElementById('blessing-text').textContent = blessingData.text;
+  document.getElementById('blessing-meaning').textContent = blessingData.meaning;
+  document.getElementById('nak-icon').textContent = nakData.icon;
+  document.getElementById('nak-name').textContent = userNakshatra + ' Nakshatra';
+  document.getElementById('nak-desc').textContent = nakData.desc;
+
+  showScreen('screen-blessing');
+}
+
+// ── UTILS ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function doAgain() {
+  currentStep = 0;
+  userName = ''; userNakshatra = ''; userIntention = '';
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-nakshatra').value = '';
+  document.querySelectorAll('.intention-btn').forEach(b => b.classList.remove('selected'));
+  showScreen('screen-entry');
+}
+
+function shareWhatsApp() {
+  const msg = `🙏 I just completed a virtual Ganesh Pooja! 🐘✨\n\n` +
+    `Lord Ganesha's blessings are with me, ${userName}, born under ${userNakshatra} nakshatra.\n\n` +
+    `Praying for: ${userIntention}\n\n` +
+    `ॐ गं गणपतये नमः 🪔\n\nPerform your own pooja at: ${window.location.href}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function downloadCertificate() {
+  const today = new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rozha+One&family=Hind&display=swap');
+  body { margin:0; background: #1a0505; color: #fdf0d8; font-family: 'Hind', serif; }
+  .cert { max-width: 700px; margin: 0 auto; padding: 50px 40px; border: 3px solid #c8922a;
+    background: linear-gradient(135deg, #1a0505, #2a0c0c);
+    text-align: center; position: relative; }
+  .cert::before { content: ''; position: absolute; inset: 10px; border: 1px solid rgba(200,146,42,0.3); }
+  h1 { font-family: 'Rozha One', serif; color: #f0c060; font-size: 36px; margin-bottom: 6px; }
+  .sub { color: #ff7722; font-size: 16px; font-style: italic; margin-bottom: 30px; }
+  .divider { border: none; border-top: 1px solid rgba(200,146,42,0.4); margin: 20px 0; }
+  .name { font-family: 'Rozha One', serif; font-size: 28px; color: #ffd700; margin: 16px 0; }
+  .detail { font-size: 15px; color: #e8d5b0; margin: 8px 0; }
+  .mantra { font-size: 20px; color: #ff8c2a; margin: 20px 0; }
+  .footer { margin-top: 30px; font-size: 12px; color: rgba(253,240,216,0.4); }
+  .ganesh { font-size: 64px; margin: 16px 0; }
+</style></head><body><div class="cert">
+  <div class="ganesh">🐘</div>
+  <h1>Virtual Ganesh Pooja</h1>
+  <p class="sub">Shodashopachara Pooja Certificate</p>
+  <p class="mantra">ॐ गं गणपतये नमः</p>
+  <hr class="divider">
+  <p class="detail">This certifies that</p>
+  <p class="name">${userName}</p>
+  <p class="detail">Born under <strong style="color:#ffd700">${userNakshatra}</strong> Nakshatra</p>
+  <p class="detail">has performed the complete 16-step Ganesh Shodashopachara Pooja</p>
+  <p class="detail">with the intention of <strong style="color:#ff8c2a">${userIntention}</strong></p>
+  <hr class="divider">
+  <p class="detail">Date: ${today}</p>
+  <p class="mantra" style="font-size:16px;">विघ्नहर्ता, विघ्नकर्ता, विघ्नेश्वर — जय गणेश! 🙏</p>
+  <p class="footer">Lord Ganesha's blessings are always with you.</p>
+</div></body></html>`;
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Ganesh_Pooja_${userName.replace(/\s+/g,'_')}.html`;
+  a.click();
+  toast('Certificate downloaded! 📜');
+}
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
