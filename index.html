@@ -786,8 +786,6 @@ body {
 <body>
 
 <div id="petals"></div>
-<!-- Silent hit tracker -->
-<img src="https://hits.sh/mullayilkannan.github.io/temples.svg" style="display:none" alt=""/>
 <div class="mandala-bg">
   <div class="mandala-ring"><div class="orbit-dot"></div></div>
   <div class="mandala-ring"></div>
@@ -1378,45 +1376,40 @@ function downloadCertificate() {
   toast('Certificate downloaded! 📜');
 }
 
-// ── VISITOR COUNTER ──
-async function loadVisitorCount() {
-  // Total count via free hits API
-  try {
-    const res = await fetch('https://hits.sh/mullayilkannan.github.io/temples.json');
-    const data = await res.json();
-    const total = data.total || 0;
-    animateCount('total-visitors', total);
-  } catch(e) {
-    // Fallback: localStorage total
-    let total = parseInt(localStorage.getItem('v_total') || '1000') + 1;
-    localStorage.setItem('v_total', total);
-    animateCount('total-visitors', total);
-  }
+// ── VISITOR COUNTER (localStorage — works always) ──
+function loadVisitorCount() {
+  // ── TOTAL VISITORS ──
+  let total = parseInt(localStorage.getItem('gp_total') || '0');
+  total++;
+  localStorage.setItem('gp_total', String(total));
 
-  // Today's count via localStorage
+  // ── TODAY'S COUNT ──
   const today = new Date().toDateString();
-  const storedDate = localStorage.getItem('v_date');
-  let todayCount = parseInt(localStorage.getItem('v_today') || '0');
+  const storedDate = localStorage.getItem('gp_date');
+  let todayCount = parseInt(localStorage.getItem('gp_today') || '0');
   if (storedDate !== today) {
     todayCount = 0;
-    localStorage.setItem('v_date', today);
+    localStorage.setItem('gp_date', today);
   }
   todayCount++;
-  localStorage.setItem('v_today', String(todayCount));
+  localStorage.setItem('gp_today', String(todayCount));
+
+  // ── DISPLAY ──
+  animateCount('total-visitors', total);
   animateCount('today-visitors', todayCount);
 }
 
 function animateCount(id, target) {
   const el = document.getElementById(id);
-  if (!el || !target) return;
-  const duration = 1400;
+  if (!el) return;
+  if (target === 0) { el.textContent = '0'; return; }
+  const duration = 1200;
   const startTime = performance.now();
   function update(now) {
     const elapsed = now - startTime;
     const progress = Math.min(elapsed / duration, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
-    const current = Math.floor(eased * target);
-    el.textContent = current.toLocaleString('en-IN');
+    el.textContent = Math.floor(eased * target).toLocaleString('en-IN');
     if (progress < 1) requestAnimationFrame(update);
     else el.textContent = target.toLocaleString('en-IN');
   }
