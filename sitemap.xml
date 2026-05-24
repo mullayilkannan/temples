@@ -1,0 +1,17 @@
+map · XML
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+ 
+  <!-- Main Page — Virtual Ganesh Pooja -->
+  <url>
+    <loc>https://mullayilkannan.github.io/temples/</loc>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mullayilkannan.github.io/temples/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://mullayilkannan.github.io/temples/"/>
+  </url>
+ 
+</urlset>
+ 
